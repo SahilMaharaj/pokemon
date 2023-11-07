@@ -1,6 +1,7 @@
 <template>
   <div class="main">
     <Title>{{ capitalizeFirstLetter(name) }} | Mandira's Pokedex</Title>
+
     <h1>{{ name }}</h1>
 
     <div v-if="pending">

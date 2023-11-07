@@ -1,24 +1,26 @@
 <template>
   <div>
     <Title>Pokemon API</Title>
-    <h1>Pokemon API</h1>
+
     <div class="pagination">
         <button v-for="page in totalPages" :key="page" @click="goToPage(page)">
           {{ page }}
         </button>
       </div>
       
-      <NuxtLink class="about" to="/about/">About</NuxtLink>
 
     <div v-if="pending">
       <p>Loading...</p>
     </div>
+
     <div v-else class="pokemon">
       <ul>
         <li v-for="pokemon in detailedPokemonData" :key="pokemon.id">
           <div class="pokemon-content">
-            <NuxtImg v-if="pokemon.sprite" :src="pokemon.sprite" :alt="pokemon.name" />
-            <p v-else>No Image Available</p>
+            <NuxtLink :to="`/pokemon/${pokemon.name}/`">
+              <NuxtImg v-if="pokemon.sprite" :src="pokemon.sprite" :alt="pokemon.name" />
+              <p v-else>No Image Available</p>
+            </NuxtLink>
             <NuxtLink :to="`/pokemon/${pokemon.name}/`">
               <p class="pokemon-name">{{ pokemon.name }}</p>
             </NuxtLink>
@@ -83,7 +85,7 @@ const fetchPokemonDetails = async (page) => {
     detailedPokemonData.value = allPokemonDetails.map(pokemon => ({
       id: pokemon.id,
       name: pokemon.name,
-      sprite: pokemon.sprites.front_default,
+      sprite: pokemon.sprites.other['official-artwork'].front_default,
     }));
 
     pending.value = false;
@@ -154,6 +156,10 @@ h1 {
 
 .pokemon-content {
   text-align: center;
+}
+
+.pokemon-content img {
+  width: 70%;
 }
 
 .pokemon-name {
