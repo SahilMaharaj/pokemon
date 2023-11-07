@@ -7,6 +7,9 @@
           {{ page }}
         </button>
       </div>
+      
+      <NuxtLink class="about" to="/about/">About</NuxtLink>
+
     <div v-if="pending">
       <p>Loading...</p>
     </div>
@@ -29,6 +32,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
+import { nextTick } from 'vue'; 
 
 const detailedPokemonData = ref([]);
 let pending = ref(true);
@@ -40,7 +44,6 @@ const route = useRoute();
 let currentPage = ref(route.query.page ? parseInt(route.query.page) : 1);
 
 watch(currentPage, async (newPage) => {
-  console.log('New page:', newPage);  // Logging the new page
   pending.value = true;
   try {
     await fetchPokemonDetails(newPage);
@@ -90,9 +93,9 @@ const fetchPokemonDetails = async (page) => {
 };
 
 const goToPage = (page) => {
-  console.log('Page:', page);  // Logging the page
-  currentPage.value = page;
-  router.push({ query: { page } });
+  const pageNumber = Number(page); // Ensure page is a number
+  currentPage.value = pageNumber;
+  router.push({ query: { page: pageNumber.toString() } });
 };
 
 useFetch(async () => {
@@ -132,6 +135,12 @@ h1 {
   margin-right: 5px;
   padding: 10px;
   cursor: pointer;
+}
+
+.about {
+  display: block;
+  text-align: center;
+  margin-top: 30px;
 }
 /* -- POKEMON GRID -- */
 .pokemon ul {
