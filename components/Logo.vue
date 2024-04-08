@@ -1,30 +1,30 @@
 <template>
-    <div>
-        <div class="logo-container">
-            <NuxtLink class="logo-link" to="/">
-                <h1 class="logo-heading">Pokedex</h1>
-            </NuxtLink>
-        </div>
+  <div>
+    <div class="logo-container">
+      <NuxtLink class="logo-link" to="/" @click="resetPagination">
+        <NuxtImg width="300" id="logo" src="/pukudex-logo.png" />
+      </NuxtLink>
     </div>
+  </div>
 </template>
 
 <style scoped>
 .logo-container {
-    text-align: center;
+  text-align: center;
 }
 .logo-link {
-    color: #000;
-    text-decoration: none;
-    transition: transform 0.5s ease;
-    display: inline-block;
+  color: #fff;
+  text-decoration: none;
+  transition: transform 0.5s ease;
+  display: inline-block;
 }
 
 .logo-link:hover {
-    animation: pulse 1s infinite;
+  animation: pulse 1s infinite;
 }
 
 .logo-heading {
-    display: inline-block;
+  display: inline-block;
 }
 
 @keyframes pulse {
