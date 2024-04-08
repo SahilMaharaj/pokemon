@@ -1,112 +1,95 @@
 <template>
-  <div class="main">
-    <Title>{{ capitalizeFirstLetter(name) }} | Mandira's Pokedex</Title>
+  <main class="main">
+    <h1>{{ toTitleCase(specificPokemonDetails.name) }}</h1>
+    <NuxtImg
+      class="pokemon-thumb"
+      :src="`/images/${specificPokemonDetails.name}.png`"
+      width="300"
+      height="300"
+    />
 
-    <h1>{{ name }}</h1>
+    <div>ID: {{ specificPokemonDetails.id }}</div>
+    <div>Base Experience: {{ specificPokemonDetails.base_experience }}</div>
 
-    <div v-if="pending">
-      <p>Loading...</p>
-    </div>
+    <!--- ABILITIES --->
+    <h4>ABILITIES</h4>
+    <ul class="abilities">
+      <li
+        v-for="ability in specificPokemonDetails.abilities"
+        :key="ability.ability"
+      >
+        {{ toTitleCase(ability.ability) }}
+      </li>
+    </ul>
 
-    <div class="body-content" v-else>
-      <NuxtImg v-if="frontDefaultSprite" :src="frontDefaultSprite" :alt="name" />
+    <!--- DIMENSIONS --->
+    <h4>DIMENSIONS</h4>
+    <div>Height: {{ specificPokemonDetails.height / 10 }}m</div>
+    <div>Weight: {{ specificPokemonDetails.weight / 10 }}kgs</div>
 
-      <h3>ID: {{ id }}</h3>
+    <!--- TYPES --->
+    <h4>TYPES</h4>
+    <ul class="types">
+      <li v-for="type in specificPokemonDetails.types" :key="type.type">
+        {{ toTitleCase(type.type) }}
+      </li>
+    </ul>
 
-      <h2>Abilities</h2>
-      <ul class="attribute-list">
-        <li v-for="ability in abilities" :key="ability.name">
-          <p>{{ formatAbilityName(ability.name) }}</p>
-        </li>
-      </ul>
-
-      <h2>Dimensions</h2>
-      <p>Height: {{ height/10 }} m</p>
-      <p>Weight: {{ weight/10 }} kgs</p>
-
-      <h2>Types</h2>
-      <ul class="attribute-list">
-        <li v-for="pokemonType in types" :key="pokemonType.name">
-          {{ capitalizeFirstLetter(pokemonType.name) }}
-        </li>
-      </ul>
-      
-    </div>
-  </div>
+    <!--- MOVIES --->
+    <h4>MOVES</h4>
+    <ul class="moves">
+      <li v-for="move in specificPokemonDetails.moves" :key="move.move">
+        {{ toTitleCase(move.move) }}
+      </li>
+    </ul>
+  </main>
 </template>
 
-
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed } from "vue";
 
 const route = useRoute();
-const name = route.params.name;
-const pending = ref(true);
-const abilities = ref([]);
-const types = ref([]);
-const height = ref([]);
-const weight = ref(0);
-const id = ref([]);
-const frontDefaultSprite = ref(null);
+const pokemonName = route.params.name; // This will dynamically get the Pokémon's name from the URL
 
-const fetchData = async () => {
-  try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    id.value = data.id;
-    height.value = data.height;
-    weight.value = data.weight;
-    frontDefaultSprite.value = data.sprites.other['official-artwork'].front_default;
-    abilities.value = data.abilities.map(a => a.ability).map(a => ({ name: a.name }));
-    types.value = data.types.map(t => t.type).map(t => ({ name: t.name }));
-    pending.value = false;
-  } catch (error) {
-    console.error('Fetch error:', error);
-    pending.value = false;
-  }
-};
+// Fetch all Pokémon data
+const { data: pokemonData } = await useFetch("/api/pokemon");
 
-onMounted(async () => {
-  await fetchData();
+// Filter out the details for the specific Pokémon from the fetched data
+const specificPokemonDetails = computed(() => {
+  return pokemonData.value.find(
+    (pokemon) => pokemon.name.toLowerCase() === pokemonName.toLowerCase()
+  );
 });
 
-const capitalizeFirstLetter = (string) => {
-  return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
-};
-
-const formatAbilityName = (abilityName) => {
-  return abilityName
-    ? abilityName
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-    : '';
+const toTitleCase = (str) => {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 };
 </script>
 
-<style>
-.main {
-  padding: 0 15px 0 15px;
-}
-
-h1 {
-  text-transform: uppercase;
-}
-
-.body-content {
+<style scoped>
+main {
   text-align: center;
 }
 
-.attribute-list {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
+.pokemon-thumb {
+  margin: 0 auto;
 }
 
-.abilities {
-  text-transform: capitalize;
+.moves {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.moves li {
+  margin: 10px;
+  justify-content: center;
+  align-items: center;
+  background-color: #386abb;
+  border-radius: 5px;
+  padding: 5px;
 }
 </style>

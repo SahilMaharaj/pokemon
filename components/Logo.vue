@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="logo-container">
-      <NuxtLink class="logo-link" to="/" @click="resetPagination">
+      <NuxtLink class="logo-link" to="/">
         <NuxtImg width="300" id="logo" src="/pukudex-logo.png" />
       </NuxtLink>
     </div>
